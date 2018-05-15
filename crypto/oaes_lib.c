@@ -49,6 +49,7 @@ static const char _NR[] = {
 #include <unistd.h>
 #endif
 
+#include "miner.h"
 #include "oaes_config.h"
 #include "oaes_lib.h"
 

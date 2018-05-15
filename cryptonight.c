@@ -5,6 +5,7 @@
 // Modified for CPUminer by Lucas Jones
 
 #include <stdlib.h> 
+#include "crypto/miner.h"
 #include "crypto/oaes_lib.h"
 #include "crypto/c_keccak.h"
 #include "crypto/c_groestl.h"
