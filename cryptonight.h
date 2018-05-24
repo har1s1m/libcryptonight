@@ -1,3 +1,5 @@
+#ifndef _CRYPTONIGHT_H__
+#define _CRYPTONIGHT_H__
 
 #define MEMORY         (1 << 21) // 2 MiB / 2097152 B
 #define ITER           (1 << 20) // 1048576
@@ -127,3 +129,5 @@ struct cryptonight_gpu_ctx {
 
 void hash_permutation(union hash_state *state);
 void hash_process(union hash_state *state, const uint8_t *buf, size_t count);
+
+#endif // _CRYPTONIGHT_H__
