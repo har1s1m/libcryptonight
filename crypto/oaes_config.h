@@ -42,7 +42,6 @@ extern "C" {
 //#ifndef OAES_DEBUG
 //#define OAES_DEBUG 0
 //#endif // OAES_DEBUG
-//#define OAES_DEBUG 1
 
 #ifdef __cplusplus 
 }
