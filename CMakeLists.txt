@@ -5,6 +5,7 @@ project(CryptoNight)
 find_package(OpenSSL)
 find_package(Boost)
 
+
 set(CMAKE_CXX_FLAGS "-g -O2 -Wall -maes -std=c++11 -std=gnu++11")
 set(CMAKE_C_FLAGS "-g -O2 -Wall -maes")
 

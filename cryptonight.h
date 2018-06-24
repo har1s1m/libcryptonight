@@ -7,6 +7,15 @@
  * Monero's resistance to ASICs and encourage mining decentralization.
  * @prehashed: do memcpy if hash already in memory
  */
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void cn_slow_hash(const void * pptr, size_t dlen, char * h, int variant, int prehashed);
+void cryptonight_hash(void* output, const void* input, size_t len);
+
+#ifdef __cplusplus
+};
+#endif
 
 #endif
