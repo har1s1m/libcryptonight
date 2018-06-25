@@ -3,7 +3,7 @@
 
 void cryptonight_hash(void* output, const void* input, size_t len);
 
-int main(int argc, char * argv[])
+int cn_test_main(int argc, char * argv[])
 {
 	unsigned char hash[128];
 	int i = 0;
