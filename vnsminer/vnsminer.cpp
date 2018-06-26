@@ -19,9 +19,9 @@ inline std::string toHex(uint64_t _n)
         return ss.str();
 }
 
-bool getWork(const std::string & url, std::string & powHash, std::string & diff){
+bool getWork(::JsonrpcGetwork * p_client, std::string & powHash, std::string & diff){
     try{
-        ::JsonrpcGetwork * p_client = new ::JsonrpcGetwork(new jsonrpc::HttpClient(url));
+        //::JsonrpcGetwork * p_client = new ::JsonrpcGetwork(new jsonrpc::HttpClient(url));
         Json::Value v = p_client->eth_getWork();
 
         //std::cout<< v.toStyledString()<<std::endl;
@@ -42,10 +42,10 @@ bool getWork(const std::string & url, std::string & powHash, std::string & diff)
     return false;
 }
 
-bool submitWork(const std::string &url, unsigned long long nonce, const uint256 & job, const uint256 & pow){
+bool submitWork(::JsonrpcGetwork * p_client, unsigned long long nonce, const uint256 & job, const uint256 & pow){
 	try
 	{
-        ::JsonrpcGetwork * p_client = new ::JsonrpcGetwork(new jsonrpc::HttpClient(url));
+        //::JsonrpcGetwork * p_client = new ::JsonrpcGetwork(new jsonrpc::HttpClient(url));
 		bool accepted = p_client->eth_submitWork(std::string("0x") + toHex(nonce)
 						, std::string("0x") + job.ToString()
 						, std::string("0x") + pow.ToString());
@@ -73,11 +73,23 @@ int main(int argc, char * argv[])
 	int i = 0;
     std::string prevjob = "";
 
+    if (argc < 1) return false;
+    std::string url = argv[1];
+
+    ::JsonrpcGetwork * p_client = nullptr;
+    try{
+        p_client = new ::JsonrpcGetwork(new jsonrpc::HttpClient(url));
+    }catch (jsonrpc::JsonRpcException const& _e){
+        std::cout<<"failed to connect to pool"<<std::endl;
+        return -1;
+    }
+
+
     while(true){
     unsigned int starttime = (unsigned int)time(NULL);
 
 	std::string powHash, diff = "";
-    if (!getWork(argv[1], powHash, diff)){
+    if (!getWork(p_client, powHash, diff)){
         std::cout<<"Failed to getwork(), sleep 3 seconds"<<std::endl;
         ::sleep(3);
         continue ;
@@ -115,7 +127,7 @@ int main(int argc, char * argv[])
         // compare
 		if (UintToArith256(target)>UintToArith256(result)){
 			printf("%s.%0llx\n",result.ToString().c_str(), nonce);
-            submitWork(argv[1], nonce, hash1, result);
+            submitWork(p_client, nonce, hash1, result);
 		}
 		nonce++;
 
