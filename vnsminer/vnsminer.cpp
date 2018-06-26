@@ -62,9 +62,22 @@ int main(int argc, char * argv[])
 	unsigned long long nonce = 0;
 	unsigned char hash[128];
 	int i = 0;
+    std::string prevjob = "";
+
+    while(true){
+    unsigned int starttime = (unsigned int)time(NULL);
 
 	std::string powHash, diff = "";
-	if (!getWork(argv[1], powHash, diff)) exit(1);
+    if (!getWork(argv[1], powHash, diff)){
+        std::cout<<"Failed to getwork(), sleep 3 seconds"<<std::endl;
+        ::sleep(3);
+        continue ;
+    }
+    if (prevjob != powHash){
+        std::cout<<"new job comes, reset nonce."<<std::endl;
+        nonce = 0;
+    }
+    prevjob = powHash;
 
 	// Note: hash1.data is little-endian	
 	uint256 hash1 = uint256S(powHash);
@@ -74,30 +87,45 @@ int main(int argc, char * argv[])
 	uint256 target = uint256S(diff);
 	//std::cout<<target.ToString()<<std::endl;
 
+    // [1]hash: big-endian
+    for(i=0;i<32;i++)input[i]=*(hash1.begin()+(32-i-1));
+
+    // [2]Padding: with 8-zeros
+    memset(&input[32],0,8);
+
 	while(true){
-		// big-endian
-		for(i=0;i<32;i++)input[i]=*(hash1.begin()+(32-i-1));	
-		memset(&input[32],0,8);
-		// big-endian
-		memcpy(&input[40], &nonce, sizeof(nonce));
+        // [3]Nonce: big-endian
+        memcpy(&input[40], &nonce, sizeof(nonce));
 
 		cryptonight_hash(hash, input, 48);
+
 		// Note: hash is big-endian, result is little-endian. reverse it.
-		uint256 result; for(i = 0; i<32;i++) *(result.begin() + (32-i-1)) = hash[i];
+        uint256 result;
+        for(i = 0; i<32;i++) *(result.begin() + (32-i-1)) = hash[i];
 		
+        // compare
 		if (UintToArith256(target)>UintToArith256(result)){
 			printf("%s.%0llx\n",result.ToString().c_str(), nonce);
-			if (submitWork(argv[1], nonce, hash1, result)){
-
-			}
-			break;
+            submitWork(argv[1], nonce, hash1, result);
 		}
 		nonce++;
-	}
+
+        if ((nonce & 0x2ff) == 0){
+            unsigned int endtime = (unsigned int)time(NULL);
+            printf("HashRate: %.2f\n", 1.0 * nonce / (endtime - starttime + 1));
+            break;
+        }
+
+    }}
 
 	return 0;
 }
 
-// g++ -I/usr/include/jsoncpp -I/usr/include/jsonrpccpp -o vnsminer -g vnsminer.cpp -L./build -lcryptonight -ljsonrpccpp-client -ljsonrpccpp-common -ljsoncpp
+// g++ -I/usr/include/jsoncpp \
+    -I/usr/include/jsonrpccpp \
+    -o vnsminer \
+    -g vnsminer.cpp \
+    -L./build \
+    -lcryptonight -ljsonrpccpp-client -ljsonrpccpp-common -ljsoncpp
 
 // ref: https://cryptonote.org/cns/cns008.txt
