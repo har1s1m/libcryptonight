@@ -20,23 +20,32 @@ inline std::string toHex(uint64_t _n)
 }
 
 bool getWork(const std::string & url, std::string & powHash, std::string & diff){
+    try{
         ::JsonrpcGetwork * p_client = new ::JsonrpcGetwork(new jsonrpc::HttpClient(url));
-	Json::Value v = p_client->eth_getWork();
-	//std::cout<< v.toStyledString()<<std::endl;
-	if (v.isArray() && v.size() == 3){
-		powHash = v[0].asString();
-		diff = v[2].asString();
-		std::cout<<powHash<<std::endl;
-		std::cout<<diff<<std::endl;
-		return true;
-	}
-	return false;
+        Json::Value v = p_client->eth_getWork();
+
+        //std::cout<< v.toStyledString()<<std::endl;
+
+        if (v.isArray() && v.size() == 3){
+            powHash = v[0].asString();
+            diff = v[2].asString();
+            std::cout<<powHash<<std::endl;
+            std::cout<<diff<<std::endl;
+            return true;
+        }
+    }
+    catch (jsonrpc::JsonRpcException const& _e)
+    {
+        std::cout<< "Failed to submit solution.";
+        std::cout<< (_e.what());
+    }
+    return false;
 }
 
 bool submitWork(const std::string &url, unsigned long long nonce, const uint256 & job, const uint256 & pow){
-        ::JsonrpcGetwork * p_client = new ::JsonrpcGetwork(new jsonrpc::HttpClient(url));
 	try
 	{
+        ::JsonrpcGetwork * p_client = new ::JsonrpcGetwork(new jsonrpc::HttpClient(url));
 		bool accepted = p_client->eth_submitWork(std::string("0x") + toHex(nonce)
 						, std::string("0x") + job.ToString()
 						, std::string("0x") + pow.ToString());
