@@ -36,7 +36,7 @@ bool getWork(const std::string & url, std::string & powHash, std::string & diff)
     }
     catch (jsonrpc::JsonRpcException const& _e)
     {
-        std::cout<< "Failed to submit solution.";
+        std::cout<< "Failed to getwork().";
         std::cout<< (_e.what());
     }
     return false;
