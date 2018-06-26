@@ -122,10 +122,10 @@ int main(int argc, char * argv[])
 }
 
 // g++ -I/usr/include/jsoncpp \
-    -I/usr/include/jsonrpccpp \
-    -o vnsminer \
-    -g vnsminer.cpp \
-    -L./build \
-    -lcryptonight -ljsonrpccpp-client -ljsonrpccpp-common -ljsoncpp
+//    -I/usr/include/jsonrpccpp \
+//    -o vnsminer \
+//    -g vnsminer.cpp \
+//    -L./build \
+//    -lcryptonight -ljsonrpccpp-client -ljsonrpccpp-common -ljsoncpp
 
 // ref: https://cryptonote.org/cns/cns008.txt
